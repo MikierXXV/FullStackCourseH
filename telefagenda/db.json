@@ -1,0 +1,24 @@
+{
+  "persons": [
+    {
+      "name": "Arto Hellas",
+      "phone": "040-123456",
+      "id": "1"
+    },
+    {
+      "name": "Antonio Benaiges",
+      "phone": "22-22-222222",
+      "id": "68fd"
+    },
+    {
+      "id": "21fb",
+      "name": "Manuel de manual",
+      "phone": "33-33-333333"
+    },
+    {
+      "id": "0f7d",
+      "name": "Maguire",
+      "phone": "777-777-77"
+    }
+  ]
+}
