@@ -3,7 +3,7 @@ const app = express()
 
 const cors = require('cors')
 const morgan = require('morgan')
-
+const baseUrl = '/api/notes'
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -13,6 +13,7 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+app.use(express.static('dist'))
 app.use(express.json())
 app.use(requestLogger)
 app.use(morgan('tiny'))
@@ -38,6 +39,11 @@ let notes = [
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
+}
+
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
 }
 
 app.get('/', (request, response) => {
