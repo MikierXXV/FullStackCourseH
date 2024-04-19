@@ -6,7 +6,7 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
         event.preventDefault()
         const personObject = {
           name: newName,
-          phone: newPhone,
+          number: newPhone,
         }
         if (persons.some(person => person.name === newName)) {
           //window.alert(newName + 'is already added to phonebook')
