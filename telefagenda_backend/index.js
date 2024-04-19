@@ -1,9 +1,6 @@
 const express = require('express')
 const app = express()
 
-app.use(express.json())
-
-
 let contacts = [
     { 
         "id": 1,
@@ -27,6 +24,29 @@ let contacts = [
     }
 ]
 
+app.use(express.static('dist'))
+
+const requestLogger = (request, response, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next()
+}
+  
+const cors = require('cors')
+app.use(cors())
+
+const morgan = require('morgan')
+app.use(morgan('tiny'))
+
+app.use(express.json())
+app.use(requestLogger)
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+  
 app.get('/api/persons', (request, response) => {
     response.json(contacts)
 })
@@ -50,7 +70,7 @@ app.get('/api/persons/:id', (request, response) => {
     }
 })
 
-app.delete('/api/contacts/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     contacts = contacts.filter(contact => contact.id !== id)
 
@@ -90,7 +110,9 @@ app.post('/api/persons', (request, response) => {
 })
 
 
-const PORT = 3001
+app.use(unknownEndpoint)
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
