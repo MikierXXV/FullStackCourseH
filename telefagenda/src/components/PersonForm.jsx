@@ -10,25 +10,25 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
         }
         if (persons.some(person => person.name === newName)) {
           //window.alert(newName + 'is already added to phonebook')
-          if (window.confirm(`${newName} aleady exists, would you like to update the phone number?`)) {
-            personService
-            .update(persons.find(p => p.name === newName).id, personObject)
-            .then(returnedPerson => {
-              setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
-              setNewName('')
-              setNewPhone('')
-              setTimeout(() => {
-                setMessage(`${newName} is been updated to the phonebook`)
-              }, 2000)
-            })
-            .catch(error => {
-              setIsError(true)
-              setTimeout(() => {
-                setMessage(`Can't update ${newName} to the phonebook: It's been deleted from server`)
-              }, 2000)
-            })
-            return
-          }
+          const notification = window.confirm(`${newName} aleady exists, would you like to update the phone number?`)
+          if (!notification) return
+          personService
+          .update(persons.find(p => p.name === newName).id, personObject)
+          .then(returnedPerson => {
+            setPersons(persons.map(p => p.id !== returnedPerson.id ? p : returnedPerson))
+            setNewName('')
+            setNewPhone('')
+            setTimeout(() => {
+              setMessage(`${newName} is been updated to the phonebook`)
+            }, 2000)
+          })
+          .catch(error => {
+            setIsError(true)
+            setTimeout(() => {
+              setMessage(`Can't update ${newName} to the phonebook: It's been deleted from server`)
+            }, 2000)
+          })
+          return
         }
         /*axios
           .post('http://localhost:3001/persons', personObject)
