@@ -21,6 +21,7 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
             setNewName('')
             setNewPhone('')
             setTimeout(() => {
+              setIsError(false)
               setMessage(`${newName} is been updated to the phonebook`)
             }, 2000)
           })
@@ -29,7 +30,6 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
             setTimeout(() => {
               setMessage(`Can't update ${newName} to the phonebook: ${error.response.data.error}`)
             }, 2000)
-            setIsError(false)
           })
           return
         }
@@ -48,6 +48,7 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
             setNewName('')
             setNewPhone('')
             setTimeout(() => {
+              setIsError(false)
               setMessage(`${newName} is been added to the phonebook`)
             }, 2000)
           })
@@ -56,7 +57,6 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
               setIsError(true)
               setMessage(`Can't add ${newName} to the phonebook: ${error.response.data.error}`)
             }, 2000)
-            setIsError(false)
           })
       }
     
