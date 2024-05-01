@@ -1,5 +1,7 @@
 //import axios from 'axios'
+import { set } from 'mongoose'
 import personService from '../services/persons'
+import mongoose from 'mongoose'
 
 const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPersons, setMessage, setIsError}) => {
     const addPerson = (event) => {
@@ -25,8 +27,9 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
           .catch(error => {
             setIsError(true)
             setTimeout(() => {
-              setMessage(`Can't update ${newName} to the phonebook: It's been deleted from server`)
+              setMessage(`Can't update ${newName} to the phonebook: ${error.response.data.error}`)
             }, 2000)
+            setIsError(false)
           })
           return
         }
@@ -50,8 +53,10 @@ const PersonFrom = ({newName, newPhone, setNewName, setNewPhone, persons, setPer
           })
           .catch(error => {
             setTimeout(() => {
-              setMessage(`Can't add ${newName} to the phonebook: ${error}`)
+              setIsError(true)
+              setMessage(`Can't add ${newName} to the phonebook: ${error.response.data.error}`)
             }, 2000)
+            setIsError(false)
           })
       }
     
