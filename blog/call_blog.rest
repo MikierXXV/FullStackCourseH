@@ -10,3 +10,9 @@ content-type: application/json
     "url": "https://www.youtube.com",
     "likes": 10
 }
+
+###
+GET http://localhost:3003/api/blogs/66410a0371dd1b345ec2bca1 HTTP/1.1
+
+###
+DELETE http://localhost:3003/api/blogs/6637dcadbd0dbc8c594a77fc HTTP/1.1
