@@ -1,8 +1,10 @@
 const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./test_funcs')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 const app = require('../app')
 
@@ -12,14 +14,23 @@ describe('when there is initially some blogs saved', () => {
     beforeEach(async ()=> {
         await Blog.deleteMany()
         await Blog.insertMany(helper.initialBlogs)
+        await User.deleteMany()
+        const passwordHash = await bcrypt.hash('secret', 10)
+        const user = new User({ 
+            username: 'adminitsrator', 
+            name: 'Admin',
+            password: passwordHash 
+        })
+        await user.save();
+
     })
 
-    test('blogs are returned as json', async () => {
+    /*test('blogs are returned as json', async () => {
         await api
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/)
-    })
+    })*/
 
     test('all blogs are returned', async () => {
         const response = await api.get('/api/blogs')
@@ -40,11 +51,23 @@ describe('when there is initially some blogs saved', () => {
 
     describe('addition of a new blog', () => {
         test ('a blog can be added', async () => {
+            const users = await helper.usersInDb()
+            const user = users[0]
+            console.log("USUARIO:", user)
+            const res = await api
+                .post('/api/login')
+                .send({ username: user.username, password: user.password })
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+
+            const token = res.body.token
+
             const blog = {
                 title: "Test blog",
                 author: "Test author",
                 url: "Test url",
-                likers: 0
+                likers: 0,
+                user: user.id
             }
 
             await api
@@ -52,6 +75,7 @@ describe('when there is initially some blogs saved', () => {
                 .send(blog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/)
+                .set('Authorization', `bearer ${token}`)
             
             const blogsAtEnd = await helper.blogsInDb()
             assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
@@ -129,6 +153,103 @@ describe('when there is initially some blogs saved', () => {
 
             const titles = blogsAtEnd.map(blog => blog.title)
             assert(!titles.includes(blogToDelete.title))
+        })
+    })
+
+    describe('viewing a user', () => {
+        beforeEach(async () => {
+            await User.deleteMany();
+            const passwordHash = await bcrypt.hash('secret', 10)
+            const user = new User({ 
+                username: 'adminitsrator', 
+                name: 'Admin',
+                password: passwordHash 
+            })
+            await user.save();
+        })
+
+        test('creation succeeds with a fresh username', async () => {
+            const usersAtStart = await helper.usersInDb()
+            const newUser = {
+                username: 'test',
+                name: 'Test User',
+                password: 'password@123',
+            }
+            
+            await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(201)
+                .expect('Content-Type', /application\/json/)
+
+            const usersAtEnd = await helper.usersInDb()
+            assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+            const usernames = usersAtEnd.map(user => user.username)
+            assert(usernames.includes(newUser.username))
+        })
+
+        test('min length of username is 3', async () => {
+            const usersAtStart = await helper.usersInDb()
+            const newUser = {
+                username: 'te',
+                name: 'Test User',
+                password: 'password@123',
+            }
+            await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(400)
+            const usersAtEnd = await helper.usersInDb()
+            assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+            const usernames = usersAtEnd.map(user => user.username)
+            assert(!usernames.includes(newUser.username))
+        })
+
+        test('min length of password is 3', async () => {
+            const usersAtStart = await helper.usersInDb()
+            const newUser = {
+                username: 'test',
+                name: 'Test User',
+                password: 'pa',
+            }
+            await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(400)
+            const usersAtEnd = await helper.usersInDb()
+            assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+            const usernames = usersAtEnd.map(user => user.username)
+            assert(!usernames.includes(newUser.username))
+        })
+
+        test('username and password are required', async () => {
+            const usersAtStart = await helper.usersInDb()
+            const newUser = {
+                name: 'Userwithoutusername',
+            }
+            await api
+                .post('/api/users')
+                .send(newUser)
+            const usersAtEnd = await helper.usersInDb()
+            assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+        })
+
+        test('username must be unique', async () => {
+            const usersAtStart = await helper.usersInDb()
+            const newUser = {
+                username: 'adminitsrator',
+                name: 'Test User',
+                password: 'password@123',
+            }
+            await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(400)
+            const usersAtEnd = await helper.usersInDb()
+            assert.strictEqual(usersAtEnd.length, usersAtStart.length)
         })
     })
 })

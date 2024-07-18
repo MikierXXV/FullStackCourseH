@@ -5,10 +5,11 @@ POST http://localhost:3003/api/blogs/ HTTP/1.1
 content-type: application/json
 
 {
-    "title": "Second blog",
-    "author": "Macguire",
+    "title": "Blog with user reference 2",
+    "author": "Macguire2",
     "url": "https://www.youtube.com",
-    "likes": 10
+    "likes": 10,
+    "userId": "666f1876956f86274b9edc71"
 }
 
 ###
@@ -16,3 +17,56 @@ GET http://localhost:3003/api/blogs/66410a0371dd1b345ec2bca1 HTTP/1.1
 
 ###
 DELETE http://localhost:3003/api/blogs/6637dcadbd0dbc8c594a77fc HTTP/1.1
+
+###
+POST http://localhost:3003/api/users/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "admin",
+    "name": "admin",
+    "password": "admin1234"
+}
+
+###
+GET http://localhost:3003/api/users/ HTTP/1.1
+
+###
+POST http://localhost:3003/api/login/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "admin",
+    "password": "admin1234"
+}
+
+
+###
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hY2d1aXJlIiwiaWQiOiI2Njc4MTU0OWM3YzVkMDM5YWQ4NmMxMGIiLCJpYXQiOjE3MTk0MjA4NDMsImV4cCI6MTcxOTQyNDQ0M30.ufDu-bx3YkSDebi90yy_Jo_GlzKpcH2fYjdyLvIOtLc
+
+{
+    "title": "Blog with token10 user refernce",
+    "author": "Macguire",
+    "url": "https://www.youtube.com",
+    "likes": 10,
+    "userId": "66781549c7c5d039ad86c10b"
+}
+
+###
+DELETE http://localhost:3003/api/blogs/667c4cf1341703ba291a2297 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hY2d1aXJlIiwiaWQiOiI2Njc4MTU0OWM3YzVkMDM5YWQ4NmMxMGIiLCJpYXQiOjE3MTk0MjA4NDMsImV4cCI6MTcxOTQyNDQ0M30.ufDu-bx3YkSDebi90yy_Jo_GlzKpcH2fYjdyLvIOtLc
+
+###
+PUT http://localhost:3003/api/blogs/668ad5fc67b7b53e67c64820 HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2NjgxOTdkNzk2NmQ2MTMzMjY0Yjg1YTAiLCJpYXQiOjE3MjEwNjI1MzEsImV4cCI6MTcyMTA2NjEzMX0.huqwSsikwizQugiCJ1sZZhG0lvD60-ruqAWeJLNrDcY
+
+{
+  "user": "668197d7966d6133264b85a0",
+  "likes": 1,
+  "author": "Joel Spolsky",
+  "title": "The Joel Test: 12 Steps to Better Code",
+  "url": "https://www.joelonsoftware.com/2000/08/09/the-joel-test-12-steps-to-better-code/"
+}
